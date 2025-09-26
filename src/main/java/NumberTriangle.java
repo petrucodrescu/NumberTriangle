@@ -1,5 +1,6 @@
 import java.io.*;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 /**
  * This is the provided NumberTriangle class to be used in this coding task.
@@ -89,21 +90,14 @@ public class NumberTriangle {
      *
      */
     public int retrieve(String path) {
-        if (path.equals("")){
-            return this.getRoot();
+        NumberTriangle prev = this;
+        for (int i = 0; i < path.length(); i++) {
+            if(path.charAt(i) == 'l'){
+                prev = prev.left;
+            }
+            else {prev = prev.right;}
         }
-        else if (path.charAt(0) == 'l'){
-            this.root = this.left.root;
-            this.left = this.left.left;
-            this.right = this.left.right;
-            return this.retrieve(path.substring(1));
-        }
-        else{
-            this.root = this.right.root;
-            this.right = this.right.right;
-            this.left = this.right.left;
-            return this.retrieve(path.substring(1));
-        }
+        return prev.root;
     }
 
     /** Read in the NumberTriangle structure from a file.
@@ -125,6 +119,7 @@ public class NumberTriangle {
 
 
         // TODO define any variables that you want to use to store things
+        ArrayList<NumberTriangle> prev = new ArrayList<>();
 
         // will need to return the top of the NumberTriangle,
         // so might want a variable for that.
@@ -134,9 +129,26 @@ public class NumberTriangle {
         while (line != null) {
 
             // remove when done; this line is included so running starter code prints the contents of the file
-            System.out.println(line);
+            // System.out.println(line);
 
-            // TODO process the line
+            String[] arr = line.split(" ");
+            if(arr.length == 1){
+                top = new NumberTriangle(Integer.parseInt(arr[0]));
+                prev.add(top);
+            }
+
+            else{
+                ArrayList<NumberTriangle> temp = new ArrayList<>();
+                for (String s : arr) {
+                    temp.add(new NumberTriangle(Integer.parseInt(s)));
+                }
+                for(int i = 0; i < prev.size(); i++){
+                    NumberTriangle curr = prev.get(i);
+                    curr.setLeft(temp.get(i));
+                    curr.setRight(temp.get(i+1));
+                }
+                prev =  temp;
+            }
 
             //read the next line
             line = br.readLine();
